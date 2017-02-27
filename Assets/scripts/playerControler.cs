@@ -13,6 +13,7 @@ public class playerControler : MonoBehaviour {
     private Rigidbody rb;
     private int count;
     private float speed;
+    private bool gameOver = false;
 
     private void Start()
     {
@@ -24,32 +25,36 @@ public class playerControler : MonoBehaviour {
 
     private void FixedUpdate()
     {
-        float moveHorizontal = 0;
-        float moveVertical = 0;
-
-        Debug.Log(Input.touchSupported);
-        if (Input.touchSupported)
+        if (!gameOver)
         {
-            moveHorizontal = Input.GetTouch(0).deltaPosition.x;
-            moveVertical = Input.GetTouch(0).deltaPosition.y;
-            speed = 2;
-        }
-        else
-        {
-            moveHorizontal = Input.GetAxis("Horizontal");
-            moveVertical = Input.GetAxis("Vertical");
-            speed = 10;
-        }
-        Debug.Log(moveHorizontal);
-        Debug.Log(moveVertical);
+            float moveHorizontal = 0;
+            float moveVertical = 0;
 
-        Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
+            Debug.Log(Input.touchSupported);
+            if (Input.touchSupported)
+            {
+                moveHorizontal = Input.GetTouch(0).deltaPosition.x;
+                moveVertical = Input.GetTouch(0).deltaPosition.y;
+                speed = 2;
+            }
+            else
+            {
+                moveHorizontal = Input.GetAxis("Horizontal");
+                moveVertical = Input.GetAxis("Vertical");
+                speed = 10;
+            }
+            Debug.Log(moveHorizontal);
+            Debug.Log(moveVertical);
 
-        rb.AddForce(movement * speed);
+            Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
+
+            rb.AddForce(movement * speed);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other.gameObject.tag);
         if (other.gameObject.CompareTag("pick up"))
         {
             other.gameObject.SetActive(false);
@@ -57,6 +62,12 @@ public class playerControler : MonoBehaviour {
             setCountText();
             if (count == 12)
                 WinText.text = "You got them all";
+        }
+
+        if (other.gameObject.CompareTag("danger"))
+        {
+            gameOver = true;
+            WinText.text = "Game Over";
         }
     }
 
