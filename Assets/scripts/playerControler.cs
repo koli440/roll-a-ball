@@ -6,12 +6,13 @@ using UnityEngine.UI;
 
 public class playerControler : MonoBehaviour {
 
-    public float speed;
+    
     public Text CountText;
     public Text WinText;
 
     private Rigidbody rb;
     private int count;
+    private float speed;
 
     private void Start()
     {
@@ -23,10 +24,26 @@ public class playerControler : MonoBehaviour {
 
     private void FixedUpdate()
     {
-        float moveHorizontal = Input.GetTouch(0).deltaPosition.x;
-        float moveVertical = Input.GetTouch(0).deltaPosition.y;
-        Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
+        float moveHorizontal = 0;
+        float moveVertical = 0;
 
+        Debug.Log(Input.touchSupported);
+        if (Input.touchSupported)
+        {
+            moveHorizontal = Input.GetTouch(0).deltaPosition.x;
+            moveVertical = Input.GetTouch(0).deltaPosition.y;
+            speed = 2;
+        }
+        else
+        {
+            moveHorizontal = Input.GetAxis("Horizontal");
+            moveVertical = Input.GetAxis("Vertical");
+            speed = 10;
+        }
+        Debug.Log(moveHorizontal);
+        Debug.Log(moveVertical);
+
+        Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
 
         rb.AddForce(movement * speed);
     }
