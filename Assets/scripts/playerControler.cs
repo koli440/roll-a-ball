@@ -9,6 +9,8 @@ public class playerControler : MonoBehaviour {
     
     public Text CountText;
     public Text WinText;
+    public float MinY;
+    public int NumberOfPickups;
 
     private Rigidbody rb;
     private int count;
@@ -29,26 +31,35 @@ public class playerControler : MonoBehaviour {
         {
             float moveHorizontal = 0;
             float moveVertical = 0;
+            float jump = 0;
 
             Debug.Log(Input.touchSupported);
             if (Input.touchSupported)
             {
                 moveHorizontal = Input.GetTouch(0).deltaPosition.x;
                 moveVertical = Input.GetTouch(0).deltaPosition.y;
+                if (Input.GetTouch(0).phase == TouchPhase.Stationary)
+                    jump = 9;
                 speed = 2;
             }
             else
             {
                 moveHorizontal = Input.GetAxis("Horizontal");
                 moveVertical = Input.GetAxis("Vertical");
+                if (Input.GetButtonDown("Jump"))
+                    jump = 18;
                 speed = 10;
             }
             Debug.Log(moveHorizontal);
             Debug.Log(moveVertical);
 
-            Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
+            Vector3 movement = new Vector3(moveHorizontal, jump, moveVertical);
 
             rb.AddForce(movement * speed);
+        }
+        if (rb.position.y <= MinY)
+        {
+            endGame();
         }
     }
 
@@ -60,19 +71,30 @@ public class playerControler : MonoBehaviour {
             other.gameObject.SetActive(false);
             count++;
             setCountText();
-            if (count == 12)
-                WinText.text = "You got them all";
+            if (count == NumberOfPickups)
+                winGame();
         }
 
         if (other.gameObject.CompareTag("danger"))
         {
-            gameOver = true;
-            WinText.text = "Game Over";
+            endGame();
         }
     }
 
     private void setCountText()
     {
         CountText.text = String.Concat("Count: ", count.ToString());
+    }
+
+    private void winGame()
+    {
+        WinText.text = "You got them all";
+    }
+
+    private void endGame()
+    {
+        gameOver = true;
+        WinText.text = "Game Over";
+        rb.velocity = new Vector3(0, 0, 0);
     }
 }
